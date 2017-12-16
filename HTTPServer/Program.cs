@@ -15,7 +15,7 @@ namespace HTTPServer
 
             //Start server
             // 1) Make server object on port 1000
-            Server server = new Server(1000, "/rules.txt");
+            Server server = new Server(1000, "redirectionRules.txt");
             // 2) Start Server
             server.StartServer();
 
@@ -25,8 +25,14 @@ namespace HTTPServer
 
         static void CreateRedirectionRulesFile()
         {
+         
+
             // TODO: Create file named redirectionRules.txt
+
+
             // each line in the file specify a redirection rule
+
+    
             // example: "aboutus.html,aboutus2.html"
             // means that when making request to aboustus.html,, it redirects me to aboutus2
         }

@@ -162,6 +162,7 @@ namespace HTTPServer
             if (!File.Exists(filePath))
            {
 
+
            }
             
             // else read file and return its content
@@ -172,9 +173,15 @@ namespace HTTPServer
         {
             try
             {
+                Configuration.RedirectionRules = new Dictionary<string, string>();
                 // TODO: using the filepath paramter read the redirection rules from file 
+                var lines = File.ReadLines(filePath);
+                foreach (var line in lines)
+                {
+                    string[] Line = line.Split(',');
+                    Configuration.RedirectionRules.Add(Line[0], Line[1]);
 
-
+                }
 
                 // then fill Configuration.RedirectionRules dictionary 
             }
