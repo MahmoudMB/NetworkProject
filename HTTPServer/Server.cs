@@ -159,10 +159,10 @@ namespace HTTPServer
             // TODO: check if filepath not exist log exception using Logger class and return empty string
 
           
-            if (!File.Exists(filePath))
-            {
+            //if (!File.Exists(filePath))
+         //   {
 
-            }
+          // }
             
             // else read file and return its content
             return string.Empty;
