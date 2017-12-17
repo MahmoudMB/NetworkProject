@@ -87,6 +87,7 @@ namespace HTTPServer
         {
             throw new NotImplementedException();
             string content;
+
             try
             {
 
@@ -95,7 +96,10 @@ namespace HTTPServer
                 if (request.ParseRequest())
                 {
                     content = LoadDefaultPage(Configuration.BadRequestDefaultPageName);
+                    
 
+                    
+                    
                 }
 
                 //TODO: map the relativeURI in request to get the physical path of the resource.
@@ -118,13 +122,15 @@ namespace HTTPServer
                     content = LoadDefaultPage(Configuration.NotFoundDefaultPageName);
                 }
 
-
                 //TODO: read the physical file
-
-
-
+                else {
+                    StreamReader reader = new StreamReader(physicalPath);
+                    content = reader.ReadToEnd();
+                    reader.Close();
+                }
+                
                 // Create OK response
-
+                return new Response(HTTPServer.StatusCode.OK, "text/html", content, redirectedPath); ;
 
             }
             catch (Exception ex)
@@ -132,6 +138,9 @@ namespace HTTPServer
                 // TODO: log exception using Logger class
                 Logger.LogException(ex);
                 // TODO: in case of exception, return Internal Server Error. 
+            return new Response(HTTPServer.StatusCode.InternalServerError, "text/html", 
+                content, GetRedirectionPagePathIFExist(request.relativeURI));
+
 
             }
         }
