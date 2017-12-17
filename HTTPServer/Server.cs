@@ -87,34 +87,25 @@ namespace HTTPServer
         {
             throw new NotImplementedException();
             string content;
-
+            StatusCode statuecode = HTTPServer.StatusCode.BadRequest;
             try
             {
-
                 //TODO: check for bad request 
-
-                if (request.ParseRequest())
+                if (!request.ParseRequest())
                 {
                     content = LoadDefaultPage(Configuration.BadRequestDefaultPageName);
-                    
-
-                    
+                    return new Response(statuecode, "text/html", content, GetRedirectionPagePathIFExist(request.relativeURI));
                     
                 }
-
                 //TODO: map the relativeURI in request to get the physical path of the resource.
                 string physicalPath = Path.Combine(Configuration.RootPath, request.relativeURI);
-
-
                 //TODO: check for redirect
-
                 string redirectedPath = GetRedirectionPagePathIFExist(request.relativeURI);
                 if (redirectedPath != "")
                 {
                     physicalPath = redirectedPath;
                     
                 }
-
 
                 //TODO: check file exists
                 if (!File.Exists(physicalPath))
@@ -130,7 +121,8 @@ namespace HTTPServer
                 }
                 
                 // Create OK response
-                return new Response(HTTPServer.StatusCode.OK, "text/html", content, redirectedPath); ;
+                statuecode=HTTPServer.StatusCode.OK;
+                return new Response(statuecode, "text/html", content, redirectedPath); 
 
             }
             catch (Exception ex)
@@ -138,7 +130,8 @@ namespace HTTPServer
                 // TODO: log exception using Logger class
                 Logger.LogException(ex);
                 // TODO: in case of exception, return Internal Server Error. 
-            return new Response(HTTPServer.StatusCode.InternalServerError, "text/html", 
+                statuecode = HTTPServer.StatusCode.InternalServerError;
+            return new Response(statuecode, "text/html", 
                 content, GetRedirectionPagePathIFExist(request.relativeURI));
 
 
@@ -166,8 +159,6 @@ namespace HTTPServer
         {
             string filePath = Path.Combine(Configuration.RootPath, defaultPageName);
             // TODO: check if filepath not exist log exception using Logger class and return empty string
-
-
             if (!File.Exists(filePath))
             {
                 Logger.LogException(new Exception("Default Page " + defaultPageName + " not exist"));
