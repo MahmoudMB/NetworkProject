@@ -104,7 +104,10 @@ namespace HTTPServer
                 //TODO: check for redirect
                 string redirectedPath = GetRedirectionPagePathIFExist(request.relativeURI);
                 //TODO: read the physical file
-                content = provideResponseContent(physicalPath);
+
+                StreamReader reader = new StreamReader(physicalPath);
+                 content = reader.ReadToEnd();
+                reader.Close();
 
                 if (redirectedPath != "")
                 {
@@ -136,7 +139,7 @@ namespace HTTPServer
                 Logger.LogException(ex);
                 // TODO: in case of exception, return Internal Server Error. 
                 statuecode = HTTPServer.StatusCode.InternalServerError;
-            return new Response(statuecode, "text/html", 
+            return new Response(statuecode, contentType, 
                 content, GetRedirectionPagePathIFExist(request.relativeURI));
 
 
@@ -158,12 +161,6 @@ namespace HTTPServer
             return string.Empty;
         }
 
-        private string provideResponseContent(String Path) {
-            StreamReader reader = new StreamReader(Path);
-           string content = reader.ReadToEnd();
-            reader.Close();
-            return content;
-        }
 
         private string LoadDefaultPage(string defaultPageName)
         {
