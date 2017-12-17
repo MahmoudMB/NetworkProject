@@ -103,21 +103,28 @@ namespace HTTPServer
                 string physicalPath = Path.Combine(Configuration.RootPath, request.relativeURI);
                 //TODO: check for redirect
                 string redirectedPath = GetRedirectionPagePathIFExist(request.relativeURI);
-                //TODO: read the physical file
 
-                StreamReader reader = new StreamReader(physicalPath);
-                 content = reader.ReadToEnd();
-                reader.Close();
 
                 if (redirectedPath != "")
                 {
                     physicalPath = redirectedPath;       
                     statuecode = HTTPServer.StatusCode.Redirect;
-                    return new Response(statuecode, contentType, content, physicalPath);
+                    //TODO: read the physical file
+
+                    StreamReader reader = new StreamReader(physicalPath);
+                    content = reader.ReadToEnd();
+                    reader.Close();
+
+                    return new Response(statuecode, contentType, content, redirectedPath);
                 }
                    //TODO: check file exists
                 if (File.Exists(physicalPath))
-                {
+                {                //TODO: read the physical file
+
+                    StreamReader reader = new StreamReader(physicalPath);
+                    content = reader.ReadToEnd();
+                    reader.Close();
+
                     // Create OK response
                     statuecode = HTTPServer.StatusCode.OK;
                     return new Response(statuecode, contentType, content, redirectedPath); 
