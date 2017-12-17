@@ -91,13 +91,16 @@ namespace HTTPServer
             StatusCode statuecode;
             try
             {
+
                //TODO: check for bad request 
                 if (!request.ParseRequest())
                 {
                     content = LoadDefaultPage(Configuration.BadRequestDefaultPageName);
                     statuecode = HTTPServer.StatusCode.BadRequest;
                     return new Response(statuecode, contentType, content, GetRedirectionPagePathIFExist(request.relativeURI));
-                }
+
+                
+
 
                 //TODO: map the relativeURI in request to get the physical path of the resource.
                 string physicalPath = Path.Combine(Configuration.RootPath, request.relativeURI);
@@ -195,7 +198,9 @@ namespace HTTPServer
         {
             try
             {
+                Configuration.RedirectionRules = new Dictionary<string, string>();
                 // TODO: using the filepath paramter read the redirection rules from file 
+
                 StreamReader reader = new StreamReader(filePath);
                 Configuration.RedirectionRules = new Dictionary<string, string>();
                 // then fill Configuration.RedirectionRules dictionary 
@@ -208,6 +213,9 @@ namespace HTTPServer
                 }
 
                 reader.Close();
+
+
+ 
 
 
             }
