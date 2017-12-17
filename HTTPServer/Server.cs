@@ -173,10 +173,22 @@ namespace HTTPServer
             try
             {
                 // TODO: using the filepath paramter read the redirection rules from file 
+                StreamReader reader = new StreamReader(filePath);
 
 
-
+                Configuration.RedirectionRules = new Dictionary<string, string>();
                 // then fill Configuration.RedirectionRules dictionary 
+
+                while (!reader.EndOfStream)
+                {
+                    string temp = reader.ReadLine();
+                    string[] result = temp.Split(',');
+                    Configuration.RedirectionRules.Add(result[0], result[1]);
+                }
+
+                reader.Close();
+
+
             }
             catch (Exception ex)
             {
