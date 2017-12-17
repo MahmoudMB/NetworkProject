@@ -87,43 +87,60 @@ namespace HTTPServer
         {
             throw new NotImplementedException();
             string content;
+            string contentType="text/html";
+            StatusCode statuecode;
             try
             {
-                
-                //TODO: check for bad request 
-                
-                if (request.ParseRequest())
+
+               //TODO: check for bad request 
+                if (!request.ParseRequest())
                 {
                     content = LoadDefaultPage(Configuration.BadRequestDefaultPageName);
-                }
+                    statuecode = HTTPServer.StatusCode.BadRequest;
+                    return new Response(statuecode, contentType, content, GetRedirectionPagePathIFExist(request.relativeURI));
+
+                
+
 
                 //TODO: map the relativeURI in request to get the physical path of the resource.
                 string physicalPath = Path.Combine(Configuration.RootPath, request.relativeURI);
-
-
                 //TODO: check for redirect
-
                 string redirectedPath = GetRedirectionPagePathIFExist(request.relativeURI);
+
+
                 if (redirectedPath != "")
                 {
-                    physicalPath = redirectedPath;
-                    
+                    physicalPath = redirectedPath;       
+                    statuecode = HTTPServer.StatusCode.Redirect;
+                    //TODO: read the physical file
+
+                    StreamReader reader = new StreamReader(physicalPath);
+                    content = reader.ReadToEnd();
+                    reader.Close();
+
+                    return new Response(statuecode, contentType, content, redirectedPath);
                 }
+                   //TODO: check file exists
+                if (File.Exists(physicalPath))
+                {                //TODO: read the physical file
 
+                    StreamReader reader = new StreamReader(physicalPath);
+                    content = reader.ReadToEnd();
+                    reader.Close();
 
-                //TODO: check file exists
-                if (!File.Exists(physicalPath))
-                {
+                    // Create OK response
+                    statuecode = HTTPServer.StatusCode.OK;
+                    return new Response(statuecode, contentType, content, redirectedPath); 
+
+                }
+                else {
                     content = LoadDefaultPage(Configuration.NotFoundDefaultPageName);
+                    statuecode = HTTPServer.StatusCode.NotFound;
+
+                    return new Response(statuecode, contentType, content, redirectedPath);
                 }
-
-
-                //TODO: read the physical file
-
-
-
-                // Create OK response
-
+           
+               
 
             }
             catch (Exception ex)
@@ -131,6 +148,10 @@ namespace HTTPServer
                 // TODO: log exception using Logger class
                 Logger.LogException(ex);
                 // TODO: in case of exception, return Internal Server Error. 
+                statuecode = HTTPServer.StatusCode.InternalServerError;
+            return new Response(statuecode, contentType, 
+                content, GetRedirectionPagePathIFExist(request.relativeURI));
+
 
             }
         }
@@ -151,19 +172,24 @@ namespace HTTPServer
         }
 
 
-
         private string LoadDefaultPage(string defaultPageName)
         {
             string filePath = Path.Combine(Configuration.RootPath, defaultPageName);
             // TODO: check if filepath not exist log exception using Logger class and return empty string
-
-          
             if (!File.Exists(filePath))
-           {
+            {
+                Logger.LogException(new Exception("Default Page " + defaultPageName + " not exist"));
 
+            }
+            else {
+                StreamReader reader = new StreamReader(filePath);
+                string file = reader.ReadToEnd();
+                reader.Close();
+                return file;
 
-           }
             
+            }
+           
             // else read file and return its content
             return string.Empty;
         }
@@ -174,15 +200,24 @@ namespace HTTPServer
             {
                 Configuration.RedirectionRules = new Dictionary<string, string>();
                 // TODO: using the filepath paramter read the redirection rules from file 
-                var lines = File.ReadLines(filePath);
-                foreach (var line in lines)
-                {
-                    string[] Line = line.Split(',');
-                    Configuration.RedirectionRules.Add(Line[0], Line[1]);
 
+                StreamReader reader = new StreamReader(filePath);
+                Configuration.RedirectionRules = new Dictionary<string, string>();
+                // then fill Configuration.RedirectionRules dictionary 
+
+                while (!reader.EndOfStream)
+                {
+                    string temp = reader.ReadLine();
+                    string[] result = temp.Split(',');
+                    Configuration.RedirectionRules.Add(result[0], result[1]);
                 }
 
-                // then fill Configuration.RedirectionRules dictionary 
+                reader.Close();
+
+
+ 
+
+
             }
             catch (Exception ex)
             {

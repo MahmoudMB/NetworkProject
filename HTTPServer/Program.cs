@@ -35,6 +35,10 @@ namespace HTTPServer
     
             // example: "aboutus.html,aboutus2.html"
             // means that when making request to aboustus.html,, it redirects me to aboutus2
+            StreamWriter writer = new StreamWriter("redirectionRules.txt");
+            writer.WriteLine("aboutus.html,aboutus2.html"); //redirect to another website.
+            writer.Close();
+
         }
          
     }
