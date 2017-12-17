@@ -87,44 +87,47 @@ namespace HTTPServer
         {
             throw new NotImplementedException();
             string content;
-            StatusCode statuecode = HTTPServer.StatusCode.BadRequest;
+            string contentType="text/html";
+            StatusCode statuecode;
             try
             {
                //TODO: check for bad request 
                 if (!request.ParseRequest())
                 {
                     content = LoadDefaultPage(Configuration.BadRequestDefaultPageName);
-                     return new Response(statuecode, "text/html", content, GetRedirectionPagePathIFExist(request.relativeURI));
-                    
+                    statuecode = HTTPServer.StatusCode.BadRequest;
+                    return new Response(statuecode, contentType, content, GetRedirectionPagePathIFExist(request.relativeURI));
                 }
 
                 //TODO: map the relativeURI in request to get the physical path of the resource.
                 string physicalPath = Path.Combine(Configuration.RootPath, request.relativeURI);
                 //TODO: check for redirect
                 string redirectedPath = GetRedirectionPagePathIFExist(request.relativeURI);
+                //TODO: read the physical file
+                content = provideResponseContent(physicalPath);
+
                 if (redirectedPath != "")
                 {
-                    physicalPath = redirectedPath;      
+                    physicalPath = redirectedPath;       
+                    statuecode = HTTPServer.StatusCode.Redirect;
+                    return new Response(statuecode, contentType, content, redirectedPath);
                 }
-
-                //TODO: check file exists
-                if (!File.Exists(physicalPath))
+                   //TODO: check file exists
+                if (File.Exists(physicalPath))
                 {
+                    // Create OK response
+                    statuecode = HTTPServer.StatusCode.OK;
+                    return new Response(statuecode, contentType, content, redirectedPath); 
+
+                }
+                else {
                     content = LoadDefaultPage(Configuration.NotFoundDefaultPageName);
                     statuecode = HTTPServer.StatusCode.NotFound;
-                    return new Response(statuecode, "text/html", content, redirectedPath);
 
+                    return new Response(statuecode, contentType, content, redirectedPath);
                 }
-                //TODO: read the physical file
-                else {
-                    StreamReader reader = new StreamReader(physicalPath);
-                    content = reader.ReadToEnd();
-                    reader.Close();
-                }
-                
-                // Create OK response
-                statuecode=HTTPServer.StatusCode.OK;
-                return new Response(statuecode, "text/html", content, redirectedPath); 
+           
+               
 
             }
             catch (Exception ex)
@@ -155,7 +158,12 @@ namespace HTTPServer
             return string.Empty;
         }
 
-
+        private string provideResponseContent(String Path) {
+            StreamReader reader = new StreamReader(Path);
+           string content = reader.ReadToEnd();
+            reader.Close();
+            return content;
+        }
 
         private string LoadDefaultPage(string defaultPageName)
         {
