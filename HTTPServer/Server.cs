@@ -158,12 +158,21 @@ namespace HTTPServer
             string filePath = Path.Combine(Configuration.RootPath, defaultPageName);
             // TODO: check if filepath not exist log exception using Logger class and return empty string
 
-          
-            if (!File.Exists(filePath))
-           {
 
-           }
+            if (!File.Exists(filePath))
+            {
+                Logger.LogException(new Exception("Default Page " + defaultPageName + " not exist"));
+
+            }
+            else {
+                StreamReader reader = new StreamReader(filePath);
+                string file = reader.ReadToEnd();
+                reader.Close();
+                return file;
+
             
+            }
+           
             // else read file and return its content
             return string.Empty;
         }
