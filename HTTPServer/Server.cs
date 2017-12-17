@@ -113,7 +113,7 @@ namespace HTTPServer
                 {
                     physicalPath = redirectedPath;       
                     statuecode = HTTPServer.StatusCode.Redirect;
-                    return new Response(statuecode, contentType, content, redirectedPath);
+                    return new Response(statuecode, contentType, content, physicalPath);
                 }
                    //TODO: check file exists
                 if (File.Exists(physicalPath))
