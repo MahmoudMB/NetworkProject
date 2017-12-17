@@ -20,7 +20,7 @@ namespace HTTPServer
             //TODO: initialize this.serverSocket
 
             IPEndPoint iep = new IPEndPoint(IPAddress.Any, portNumber);
-            this.serverSocket = new Socket(AddressFamily.InterNetwork,SocketType.Stream,ProtocolType.Tcp);
+            this.serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             this.serverSocket.Bind(iep);
         }
 
@@ -55,8 +55,9 @@ namespace HTTPServer
                 try
                 {
                     // TODO: Receive request
+
                     byte[] requestRecived = new byte[1024 * 1024];
-                   int receivedLen = clientSock.Receive(requestRecived);
+                    int receivedLen = clientSock.Receive(requestRecived);
 
                     // TODO: break the while loop if receivedLen==0
                     if (receivedLen == 0)
@@ -65,10 +66,10 @@ namespace HTTPServer
                     string requeststring = Encoding.ASCII.GetString(requestRecived, 0, receivedLen);
                     Request request = new Request(requeststring);
 
-                   Response response = HandleRequest(request);
+                    Response response = HandleRequest(request);
 
                     // TODO: Send Response back to client
-                    byte[] responsebytes= Encoding.ASCII.GetBytes( response.ResponseString);
+                    byte[] responsebytes = Encoding.ASCII.GetBytes(response.ResponseString);
                     clientSock.Send(responsebytes);
 
                 }
@@ -80,27 +81,27 @@ namespace HTTPServer
             }
 
             // TODO: close client socket
-            clientSock.Close();
+            //  clientSock.Close();
         }
 
         Response HandleRequest(Request request)
         {
-            throw new NotImplementedException();
+            //  throw new NotImplementedException();
             string content;
-            string contentType="text/html";
+            string contentType = "text/html";
             StatusCode statuecode;
             try
             {
 
-               //TODO: check for bad request 
+                //TODO: check for bad request 
                 if (!request.ParseRequest())
                 {
                     content = LoadDefaultPage(Configuration.BadRequestDefaultPageName);
                     statuecode = HTTPServer.StatusCode.BadRequest;
                     return new Response(statuecode, contentType, content, GetRedirectionPagePathIFExist(request.relativeURI));
 
-                
 
+                }
 
                 //TODO: map the relativeURI in request to get the physical path of the resource.
                 string physicalPath = Path.Combine(Configuration.RootPath, request.relativeURI);
@@ -110,7 +111,7 @@ namespace HTTPServer
 
                 if (redirectedPath != "")
                 {
-                    physicalPath = redirectedPath;       
+                    physicalPath = redirectedPath;
                     statuecode = HTTPServer.StatusCode.Redirect;
                     //TODO: read the physical file
 
@@ -120,7 +121,7 @@ namespace HTTPServer
 
                     return new Response(statuecode, contentType, content, redirectedPath);
                 }
-                   //TODO: check file exists
+                //TODO: check file exists
                 if (File.Exists(physicalPath))
                 {                //TODO: read the physical file
 
@@ -130,17 +131,18 @@ namespace HTTPServer
 
                     // Create OK response
                     statuecode = HTTPServer.StatusCode.OK;
-                    return new Response(statuecode, contentType, content, redirectedPath); 
+                    return new Response(statuecode, contentType, content, redirectedPath);
 
                 }
-                else {
+                else
+                {
                     content = LoadDefaultPage(Configuration.NotFoundDefaultPageName);
                     statuecode = HTTPServer.StatusCode.NotFound;
 
                     return new Response(statuecode, contentType, content, redirectedPath);
                 }
-           
-               
+
+
 
             }
             catch (Exception ex)
@@ -148,9 +150,10 @@ namespace HTTPServer
                 // TODO: log exception using Logger class
                 Logger.LogException(ex);
                 // TODO: in case of exception, return Internal Server Error. 
+                content = LoadDefaultPage(Configuration.InternalErrorDefaultPageName);
                 statuecode = HTTPServer.StatusCode.InternalServerError;
-            return new Response(statuecode, contentType, 
-                content, GetRedirectionPagePathIFExist(request.relativeURI));
+                return new Response(statuecode, contentType,
+                    content, GetRedirectionPagePathIFExist(request.relativeURI));
 
 
             }
@@ -159,14 +162,20 @@ namespace HTTPServer
         private string GetRedirectionPagePathIFExist(string relativePath)
         {
             // using Configuration.RedirectionRules return the redirected page path if exists else returns empty
-
-            string redirectedPage = Configuration.RedirectionRules[relativePath];
-            string filePath = Path.Combine(Configuration.RootPath, redirectedPage);
-            if (File.Exists(filePath))
+            try
             {
-                return filePath;
+                string redirectedPage = Configuration.RedirectionRules[relativePath];
+                string filePath = Path.Combine(Configuration.RootPath, redirectedPage);
+                if (File.Exists(filePath))
+                {
+                    return filePath;
+                }
             }
+            catch (Exception ex)
+            {
+                return string.Empty;
 
+            }
 
             return string.Empty;
         }
@@ -181,15 +190,16 @@ namespace HTTPServer
                 Logger.LogException(new Exception("Default Page " + defaultPageName + " not exist"));
 
             }
-            else {
+            else
+            {
                 StreamReader reader = new StreamReader(filePath);
                 string file = reader.ReadToEnd();
                 reader.Close();
                 return file;
 
-            
+
             }
-           
+
             // else read file and return its content
             return string.Empty;
         }
@@ -215,7 +225,7 @@ namespace HTTPServer
                 reader.Close();
 
 
- 
+
 
 
             }

@@ -12,6 +12,11 @@ namespace HTTPServer
         {
             // TODO: Create log file named log.txt to log exception details in it
             // for each exception write its details associated with datetime 
+            StreamWriter writer = new StreamWriter("log.txt", true);
+            writer.WriteLine("DateTime: " + DateTime.Now);
+            writer.WriteLine("Message: " + ex.Message);
+            writer.WriteLine("-----------------------------");
+            writer.Close();
         }
     }
 }
