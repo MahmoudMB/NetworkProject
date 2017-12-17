@@ -154,10 +154,15 @@ namespace HTTPServer
 
         private string LoadDefaultPage(string defaultPageName)
         {
-           
+            string filePath = Path.Combine(Configuration.RootPath, defaultPageName);
             // TODO: check if filepath not exist log exception using Logger class and return empty string
 
           
+            if (!File.Exists(filePath))
+           {
+
+
+           }
             
             // else read file and return its content
             return string.Empty;
@@ -167,7 +172,16 @@ namespace HTTPServer
         {
             try
             {
-              
+                Configuration.RedirectionRules = new Dictionary<string, string>();
+                // TODO: using the filepath paramter read the redirection rules from file 
+                var lines = File.ReadLines(filePath);
+                foreach (var line in lines)
+                {
+                    string[] Line = line.Split(',');
+                    Configuration.RedirectionRules.Add(Line[0], Line[1]);
+
+                }
+
                 // then fill Configuration.RedirectionRules dictionary 
             }
             catch (Exception ex)
