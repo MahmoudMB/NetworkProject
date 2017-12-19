@@ -115,11 +115,16 @@ namespace HTTPServer
                     statuecode = HTTPServer.StatusCode.Redirect;
                     //TODO: read the physical file
 
-                    StreamReader reader = new StreamReader(physicalPath);
-                    content = reader.ReadToEnd();
-                    reader.Close();
+                    //StreamReader reader = new StreamReader(physicalPath);
+                    //  content = reader.ReadToEnd();
+                    //  reader.Close();
 
-                    return new Response(statuecode, contentType, content, redirectedPath);
+                    content = LoadDefaultPage(Configuration.RedirectionDefaultPageName);
+
+
+
+                    // return new Response(statuecode, contentType, content, redirectedPath);
+                    return new Response(statuecode, contentType, content, physicalPath);
                 }
                 //TODO: check file exists
                 if (File.Exists(physicalPath))
@@ -168,7 +173,7 @@ namespace HTTPServer
                 string filePath = Path.Combine(Configuration.RootPath, redirectedPage);
                 if (File.Exists(filePath))
                 {
-                    return filePath;
+                    return redirectedPage;
                 }
             }
             catch (Exception ex)
@@ -196,8 +201,6 @@ namespace HTTPServer
                 string file = reader.ReadToEnd();
                 reader.Close();
                 return file;
-
-
             }
 
             // else read file and return its content

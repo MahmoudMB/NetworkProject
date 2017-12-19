@@ -36,7 +36,11 @@ namespace HTTPServer
             headerLines.Add("Content-Type: " + contentType);
             headerLines.Add("Content-Length: " + content.Length.ToString());
             headerLines.Add("Date: " + DateTime.Now);
-            if (redirectoinPath != "") headerLines.Add("Location: " + redirectoinPath);
+            if (redirectoinPath != "")
+            {
+                 
+                headerLines.Add("Location: " + redirectoinPath);
+            }
             // TODO: Create the respone string
             this.responseString += GetStatusLine(code);
             foreach (var line in headerLines)

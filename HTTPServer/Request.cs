@@ -48,13 +48,11 @@ namespace HTTPServer
             //  throw new NotImplementedException();
 
             //TODO: parse the receivedRequest using the \r\n delimeter
-
-
             // check that there is atleast 3 lines: Request line, Host Header, Blank line (usually 4 lines with the last empty line for empty content)
-
-
             requestLines = requestString.Split(new[] { "\r\n" }, StringSplitOptions.None);
 
+          
+            
 
             // Parse Request line
 
@@ -71,6 +69,8 @@ namespace HTTPServer
                 return false;
 
 
+
+
             return true;
 
         }
@@ -79,7 +79,22 @@ namespace HTTPServer
         {
 
             string[] tokens2 = requestLines[0].Split(' ');
-            if (tokens2.Length == 3)
+            
+            switch (tokens2[2])
+            {
+                case "HTTP/1.0":
+                    this.httpVersion = HTTPVersion.HTTP10;
+                    break;
+                case "HTTP/1.1":
+                    this.httpVersion = HTTPVersion.HTTP11;
+                    break;
+            }
+           // method = (RequestMethod)Enum.Parse(typeof(RequestMethod), Line1[0]);
+            //relativeURI = tokens2[1].Substring(1);
+            //da bdal da bardo
+
+
+            if (tokens2.Length >=2)
             {
                 tokens2[0] = tokens2[0].ToUpper();
                 if (tokens2[0].Equals(RequestMethod.GET))
@@ -120,6 +135,9 @@ namespace HTTPServer
 
 
 
+
+
+
             // throw new NotImplementedException();
         }
 
@@ -132,59 +150,19 @@ namespace HTTPServer
         {
             // throw new NotImplementedException();
 
-
-            string[] temp = requestLines;
-
-            for (int i = 0; i < temp.Length - 1; i++)
-            {
-                if (!temp[i + 1].Equals(""))
-                {
-
-                    temp[i] = temp[i + 1];
-                }
-                else
-                {
-                    temp[i] = "";
-                    break;
-                }
-            }
-
-
-
-            string[] headerLinesTokens;
+            /// 
             headerLines = new Dictionary<string, string>();
-            //headerLinesTokens = requestLines[2].Split(new[] { "\r\n" }, StringSplitOptions.None);
-            headerLinesTokens = temp;
-
-
-            try
+        
+            string[] Delimeter = new string[] { ": " };
+            for (int index = 1; index < this.requestLines.Length - 2; index++)
             {
-                for (int i = 0; i < headerLinesTokens.Length; i++)
-                {
-
-                    int separator = headerLinesTokens[i].IndexOf(':');
-                    if (separator == -1)
-                    {
-                        // throw new Exception("invalid http header line: " + headerLinesTokens[i]);
-                        break;
-                    }
-                    String name = headerLinesTokens[i].Substring(0, separator);
-                    int pos = separator + 1;
-                    while ((pos < headerLinesTokens[i].Length) && (headerLinesTokens[i][pos] == ' '))
-                    {
-                        pos++; // strip any spaces
-                    }
-
-                    string value = headerLinesTokens[i].Substring(pos, headerLinesTokens[i].Length - pos);
-                    //  Console.WriteLine("header: {0}:{1}", name, value);
-                    headerLines.Add(name, value);
-                }
-            }
-
-            catch (Exception ex)
-            {
+                string[] HeaderLine = requestLines[index].Split(Delimeter, StringSplitOptions.None);
+                if (HeaderLine.Length < 2) return false;
+                this.HeaderLines.Add(HeaderLine[0], HeaderLine[1]);
             }
             return true;
+
+
 
 
 
@@ -193,13 +171,18 @@ namespace HTTPServer
 
         private bool ValidateBlankLine()
         {
-            //   throw new NotImplementedException();
 
-            if (!requestString.Contains("\r\n\r\n"))
-                return false;
 
-            return true;
 
+            if (this.requestLines[requestLines.Length - 2] == "")
+                return true;
+            return false;
+
+            
+        
+
+          
+            
 
 
 
