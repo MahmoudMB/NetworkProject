@@ -51,24 +51,28 @@ namespace HTTPServer
             // check that there is atleast 3 lines: Request line, Host Header, Blank line (usually 4 lines with the last empty line for empty content)
             requestLines = requestString.Split(new[] { "\r\n" }, StringSplitOptions.None);
 
-          
-            
+            if (!requestLines[1].Contains("Host"))
+            {
+                Logger.LogException(new Exception("Host Header " + requestLines[0] + " is missing"));
+                return false;
+            }
 
             // Parse Request line
-
             if (!ParseRequestLine())
+            {
                 return false;
-
+            }
 
             // Validate blank line exists
             if (!ValidateBlankLine())
+            {
                 return false;
-
+            }
             // Load header lines into HeaderLines dictionary
             if (!LoadHeaderLines())
+            {
                 return false;
-
-
+            }
 
 
             return true;
@@ -78,65 +82,70 @@ namespace HTTPServer
         private bool ParseRequestLine()
         {
 
-            string[] tokens2 = requestLines[0].Split(' ');
-            
-            switch (tokens2[2])
-            {
-                case "HTTP/1.0":
-                    this.httpVersion = HTTPVersion.HTTP10;
-                    break;
-                case "HTTP/1.1":
-                    this.httpVersion = HTTPVersion.HTTP11;
-                    break;
-            }
-           // method = (RequestMethod)Enum.Parse(typeof(RequestMethod), Line1[0]);
-            //relativeURI = tokens2[1].Substring(1);
-            //da bdal da bardo
+            string[] requestLine = requestLines[0].Split(' ');
 
 
-            if (tokens2.Length >=2)
+            if (requestLine.Length >=2 )
             {
-                tokens2[0] = tokens2[0].ToUpper();
-                if (tokens2[0].Equals(RequestMethod.GET))
+                requestLine[0] = requestLine[0].ToUpper();
+                if (requestLine[0].Equals(RequestMethod.GET))
                 {
                     method = RequestMethod.GET;
                 }
 
-                else if (tokens2[0].Equals(RequestMethod.POST))
+                else if (requestLine[0].Equals(RequestMethod.POST))
                 {
                     method = RequestMethod.POST;
                 }
 
-                else if (tokens2[0].Equals(RequestMethod.HEAD))
+                else if (requestLine[0].Equals(RequestMethod.HEAD))
                 {
                     method = RequestMethod.HEAD;
                 }
 
 
 
-                if (ValidateIsURI(tokens2[1]))
+                if (ValidateIsURI(requestLine[1]))
                 {
-                    string[] tmp = tokens2[1].Split('/');
+                    string[] tmp = requestLine[1].Split('/');
                     relativeURI = tmp[1];
-                    return true;
+                   
                 }
                 else
                 {
+
+                    Logger.LogException(new Exception("Relative Uri " + requestLines[1] + " is Invalid"));
                     return false;
                 }
+
+                requestLine[2] = requestLine[2].ToUpper();
+
+                if (requestLine[2].Equals(HTTPVersion.HTTP09))
+                {
+                    httpVersion = HTTPVersion.HTTP09;
+                }
+
+                else if (requestLine[2].Equals(HTTPVersion.HTTP10))
+                {
+                    httpVersion = HTTPVersion.HTTP10;
+                }
+
+                else if (requestLine[2].Equals(HTTPVersion.HTTP11))
+                {
+                    httpVersion = HTTPVersion.HTTP11;
+                }
+
 
             }
             else
             {
+                Logger.LogException(new Exception("RequstLine " + requestLines[0] + " is missing informations"));
                 return false;
             }
 
 
 
-
-
-
-
+            return true;
 
             // throw new NotImplementedException();
         }
@@ -150,39 +159,46 @@ namespace HTTPServer
         {
             // throw new NotImplementedException();
 
-            /// 
+           
+
             headerLines = new Dictionary<string, string>();
         
-            string[] Delimeter = new string[] { ": " };
-            for (int index = 1; index < this.requestLines.Length - 2; index++)
+            for (int i = 1; i < requestLines.Length - 2; i++)
             {
-                string[] HeaderLine = requestLines[index].Split(Delimeter, StringSplitOptions.None);
-                if (HeaderLine.Length < 2) return false;
-                this.HeaderLines.Add(HeaderLine[0], HeaderLine[1]);
+                string[] headerLine = requestLines[i].Split(new string[] { ": " }, StringSplitOptions.None);
+                if (headerLine.Length == 2)
+                {
+                    HeaderLines.Add(headerLine[0], headerLine[1]);
+                }
+                else
+                {
+                    Logger.LogException(new Exception("Header Line " + headerLine[i] + " is missing"));
+                    return false;
+                }
+
             }
             return true;
-
-
-
-
-
 
         }
 
         private bool ValidateBlankLine()
         {
 
+            int blankLinendex = requestLines.Length - 2;
 
 
-            if (this.requestLines[requestLines.Length - 2] == "")
+            if (requestLines[blankLinendex] != string.Empty)
+            {
+                Logger.LogException(new Exception("Blank Line " + requestLines[0] + " is missing"));
+                return false;
+            }
+
+            else
+
                 return true;
-            return false;
 
-            
-        
 
-          
-            
+
 
 
 

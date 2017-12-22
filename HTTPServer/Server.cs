@@ -81,7 +81,7 @@ namespace HTTPServer
             }
 
             // TODO: close client socket
-            //  clientSock.Close();
+              clientSock.Close();
         }
 
         Response HandleRequest(Request request)
@@ -113,15 +113,9 @@ namespace HTTPServer
                 {
                     physicalPath = redirectedPath;
                     statuecode = HTTPServer.StatusCode.Redirect;
-                    //TODO: read the physical file
 
-                    //StreamReader reader = new StreamReader(physicalPath);
-                    //  content = reader.ReadToEnd();
-                    //  reader.Close();
 
                     content = LoadDefaultPage(Configuration.RedirectionDefaultPageName);
-
-
 
                     // return new Response(statuecode, contentType, content, redirectedPath);
                     return new Response(statuecode, contentType, content, physicalPath);

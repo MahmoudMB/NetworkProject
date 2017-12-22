@@ -27,27 +27,31 @@ namespace HTTPServer
             }
         }
         StatusCode code;
+        
         List<string> headerLines = new List<string>();
         public Response(StatusCode code, string contentType, string content, string redirectoinPath)
         {
             this.code = code;
             //throw new NotImplementedException();
             // TODO: Add headlines (Content-Type, Content-Length,Date, [location if there is redirection])
+
+
             headerLines.Add("Content-Type: " + contentType);
             headerLines.Add("Content-Length: " + content.Length.ToString());
             headerLines.Add("Date: " + DateTime.Now);
-            if (redirectoinPath != "")
+            if (redirectoinPath != null)
             {
-                 
                 headerLines.Add("Location: " + redirectoinPath);
             }
             // TODO: Create the respone string
-            this.responseString += GetStatusLine(code);
+            responseString += GetStatusLine(code);
             foreach (var line in headerLines)
             {
-                this.responseString += line + "\r\n";
+
+               responseString += line + "\r\n";
+
             }
-            this.responseString += "\r\n" + content;
+            responseString += "\r\n" + content;
 
         }
 
@@ -55,7 +59,8 @@ namespace HTTPServer
         private string GetStatusLine(StatusCode code)
         {
             // TODO: Create the response status line and return it
-            string statusLine = string.Format("HTTP/1.1 {0} {1}\r\n", "", ((int)code).ToString(), code.ToString());
+
+            string statusLine = Configuration.ServerHTTPVersion + " " + (int)code +" "+ code;  
 
             return statusLine;
         }
