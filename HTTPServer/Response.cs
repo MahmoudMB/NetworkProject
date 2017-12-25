@@ -45,10 +45,9 @@ namespace HTTPServer
             }
             // TODO: Create the respone string
             responseString += GetStatusLine(code);
-            foreach (var line in headerLines)
-            {
+           for (int i = 0; i < headerLines.Count; i++) { 
 
-               responseString += line + "\r\n";
+               responseString += headerLines[i] + "\r\n";
 
             }
             responseString += "\r\n" + content;
@@ -60,7 +59,7 @@ namespace HTTPServer
         {
             // TODO: Create the response status line and return it
 
-            string statusLine = Configuration.ServerHTTPVersion + " " + (int)code +" "+ code;  
+            string statusLine = Configuration.ServerHTTPVersion + " " + (int)code +" "+ code.ToString();  
 
             return statusLine;
         }

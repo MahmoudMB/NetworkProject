@@ -109,3 +109,31 @@ Message: The given key was not present in the dictionary.
 DateTime: 12/18/2017 12:31:33 AM
 Message: The given key was not present in the dictionary.
 -----------------------------
+New Exception
+Details: RequstLine GET /aboutus2.html HTTP/1.1 is missing informations
+DateTime: 12/25/2017 5:12:54 PM
+////////////////////////////////////////////////////
+New Exception
+Details: RequstLine GET /aboutus2.html HTTP/1.1 is missing informations
+DateTime: 12/25/2017 5:12:56 PM
+////////////////////////////////////////////////////
+New Exception
+Details: RequstLine GET /aboutus2.html HTTP/1.1 is missing informations
+DateTime: 12/25/2017 5:13:03 PM
+////////////////////////////////////////////////////
+New Exception
+Details: RequstLine GET /aboutus2.html HTTP/1.1 is missing informations
+DateTime: 12/25/2017 5:13:20 PM
+////////////////////////////////////////////////////
+New Exception
+Details: Index was outside the bounds of the array.
+DateTime: 12/25/2017 5:21:07 PM
+////////////////////////////////////////////////////
+New Exception
+Details: RequstLine GET/main.html HTTP/1.1 is missing informations
+DateTime: 12/25/2017 5:21:48 PM
+////////////////////////////////////////////////////
+New Exception
+Details: Host Header GET /main.html HTTP/1.1 is missing
+DateTime: 12/25/2017 5:22:15 PM
+////////////////////////////////////////////////////

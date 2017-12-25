@@ -81,35 +81,29 @@ namespace HTTPServer
 
         private bool ParseRequestLine()
         {
-
             string[] requestLine = requestLines[0].Split(' ');
 
-
-            if (requestLine.Length >=2 )
+            if (requestLine.Length ==3 )
             {
                 requestLine[0] = requestLine[0].ToUpper();
-                if (requestLine[0].Equals(RequestMethod.GET))
+
+                switch(requestLine[0])
                 {
-                    method = RequestMethod.GET;
+                    case "GET":
+                        method = RequestMethod.GET;
+                        break;
+                    case "POST":
+                        method = RequestMethod.POST;
+                        break;
+                    default:
+                        return false;
                 }
-
-                else if (requestLine[0].Equals(RequestMethod.POST))
-                {
-                    method = RequestMethod.POST;
-                }
-
-                else if (requestLine[0].Equals(RequestMethod.HEAD))
-                {
-                    method = RequestMethod.HEAD;
-                }
-
-
+            
 
                 if (ValidateIsURI(requestLine[1]))
                 {
                     string[] tmp = requestLine[1].Split('/');
                     relativeURI = tmp[1];
-                   
                 }
                 else
                 {
@@ -120,22 +114,25 @@ namespace HTTPServer
 
                 requestLine[2] = requestLine[2].ToUpper();
 
-                if (requestLine[2].Equals(HTTPVersion.HTTP09))
+
+
+                switch (requestLine[2])
                 {
-                    httpVersion = HTTPVersion.HTTP09;
+                    case "HTTP/1.1":
+                        httpVersion = HTTPVersion.HTTP11;
+                        break;
+
+                    case "HTTP/1.0":
+                        httpVersion = HTTPVersion.HTTP10;
+                        break;
+
+                    default:
+                        return false;
+
+
                 }
 
-                else if (requestLine[2].Equals(HTTPVersion.HTTP10))
-                {
-                    httpVersion = HTTPVersion.HTTP10;
-                }
-
-                else if (requestLine[2].Equals(HTTPVersion.HTTP11))
-                {
-                    httpVersion = HTTPVersion.HTTP11;
-                }
-
-
+               
             }
             else
             {
